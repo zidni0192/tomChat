@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "362309626919",
+    "firebase_url": "https://tomchat-9968d.firebaseio.com",
+    "project_id": "tomchat-9968d",
+    "storage_bucket": "tomchat-9968d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362309626919:android:89fe6e9c6f2268a7",
+        "android_client_info": {
+          "package_name": "com.tomchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "362309626919-u1jrddi3pgi6jcvhf236rviqjk7vkhat.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgCV5VDYgHqozjKJ53nJDN3-OiSlQsieM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "362309626919-u1jrddi3pgi6jcvhf236rviqjk7vkhat.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
