@@ -22,9 +22,7 @@ class Register extends Component {
             longitude: 0,
         }
     }
-    componentDidMount = ()=>{
-        
-    }
+
     regis = async () => {
         await GeoLocation.getCurrentPosition((position) => {
             let region = {
@@ -57,17 +55,18 @@ class Register extends Component {
                 firebase.database().ref(`users/${value.user.uid}`).set({
                     username: this.state.username,
                     longitude: this.state.region.longitude,
-                    latitude:this.state.region.latitude
-                }).then(()=>{{
-                    AsyncStorage.setItem('uid',value.user.uid)
-                    AsyncStorage.setItem('username',this.state.username)
+                    latitude: this.state.region.latitude
+                }).then(() => {
+                    AsyncStorage.setItem('uid', value.user.uid)
+                    AsyncStorage.setItem('username', this.state.username)
+                    AsyncStorage.setItem('longitude',this.state.region.longitude)
+                    AsyncStorage.setItem('latitude',this.state.region.latitude)
                     this.props.navigation.navigate('Home')
-                }
-                }).catch((error)=>{
-                    console.warn('baru error',error);
+                }).catch((error) => {
+                    console.warn('baru error', error);
                 })
             })
-            .catch(error => Alert.alert("Error",error))
+            .catch(error => Alert.alert("Error", error))
     }
     render() {
         return (

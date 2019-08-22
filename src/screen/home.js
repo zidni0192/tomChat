@@ -4,52 +4,25 @@ import {
     Text,
     View,
     TouchableOpacity,
-    Image
+    Image,
+    AsyncStorage
 } from 'react-native'
 import * as GeoLocation from '@react-native-community/geolocation'
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+const firebase = require('firebase')
+
 export default class Home extends Component {
     constructor(props) {
         super(props)
         this.showMenu.bind(this)
     }
-    static navigationOptions = ({ navigation }) => {
-        console.warn(navigation);
 
-        return {
-            // header:null
-            headerLeft: <></>
-            // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            //     <Menu
-            //         ref={this.setMenuRef}
-            //         button={<Text onPress={navigation.showMenu.bind(this)}>Show menu</Text>}
-            //     >
-            //         <MenuItem onPress={this.hideMenu}>Menu item 1</MenuItem>
-            //         <MenuItem onPress={this.hideMenu}>Menu item 2</MenuItem>
-            //         <MenuItem onPress={this.hideMenu} disabled>
-            //             Menu item 3
-            // </MenuItem>
-            //         <MenuDivider />
-            //         <MenuItem onPress={this.hideMenu}>Menu item 4</MenuItem>
-            //     </Menu>
-            // </View>
-
-            // <TouchableOpacity style={{ marginTop: 20, zIndex: -10, borderRadius: 50, padding: 10, width: 50, height: 50, backgroundColor: 'white', marginLeft: 10, elevation: 3 }}>
-            //     <Image source={require('../assets/image/menu.png')} style={{ height: 20, width: 20, marginLeft: 5, marginTop: 5 }} />
-            // </TouchableOpacity>
-            ,
-            // headerTransparent: true,
-            // headerRight:
-            //     <TouchableOpacity style={{ marginTop: 20, borderRadius: 50, padding: 10, width: 50, height: 50, backgroundColor: 'white', marginRight: 10, elevation: 3 }}>
-            //         <Image source={require('../assets/image/headerRight.png')} style={{ width: 30, height: 30 }} />
-            //     </TouchableOpacity>,
-        }
-    }
     state = {
         region: {
             latitude: 0,
             longitude: 0,
-        }
+        },
+        uid:''
     }
     _menu = null;
 
@@ -65,6 +38,9 @@ export default class Home extends Component {
         this._menu.show();
     };
     componentDidMount = async () => {
+        await AsyncStorage.getItem('uid', (error, result) => {
+            this.setState({ uid: result })
+        })        
         await GeoLocation.getCurrentPosition((position) => {
             let region = {
                 latitude: position.coords.latitude,
@@ -81,6 +57,30 @@ export default class Home extends Component {
             console.warn(err);
         })
     }
+    logout = async () => {
+        if (!firebase.apps.length) {
+            firebase.initializeApp({
+                apiKey: 'AIzaSyBeik8UWYHbu71aLy__L4j3Q1x7x0wGYCo',
+                authDomain: 'tomchat-9968d.firebaseapp.com',
+                databaseURL: 'https://tomchat-9968d.firebaseio.com/',
+                projectId: 'tomchat-9968d',
+                storageBucket: 'tomchat-9968d.appspot.com',
+                messagingSenderId: '362309626919',
+                appId: '1:362309626919:android:89fe6e9c6f2268a7'
+            })
+        }
+        const uid = await AsyncStorage.getItem('uid')
+        console.warn(uid);
+        await firebase.auth().signOut()
+        await firebase.database().ref('/user/' + uid).update({ status: 'offline' }).then(async() => {
+            await AsyncStorage.clear()
+            this.hideMenu()
+            this.props.navigation.push('Loading')
+        }).catch((error)=>{
+            console.warn(error);
+            this.hideMenu()
+        })
+    }
     render() {
         console.warn(this.state.region);
         const userLocation = this.state.region && this.state.region
@@ -89,13 +89,12 @@ export default class Home extends Component {
                 <Menu style={{ marginTop: 70 }}
                     ref={this.setMenuRef}
                     button={
-                        <TouchableOpacity style={{ position: "absolute", alignSelf: 'flex-start', marginTop: 20, zIndex: -10, borderRadius: 50, padding: 10, width: 50, height: 50, backgroundColor: 'white', marginLeft: 10, elevation: 3 }} onPress={this.showMenu}>
+                        <TouchableOpacity style={{ marginTop: 20, borderRadius: 50, padding: 10, width: 50, height: 50, backgroundColor: 'white', marginLeft: 10, elevation: 3 }} onPress={this.showMenu}>
                             <Image source={require('../assets/image/menu.png')} style={{ height: 20, width: 20, marginLeft: 5, marginTop: 5 }} />
                         </TouchableOpacity>}
                 >
-                    <Text>Selamat Datang</Text>
                     <MenuItem onPress={this.hideMenu}>Makan</MenuItem>
-                    <MenuItem onPress={this.hideMenu}>Logout</MenuItem>
+                    <MenuItem onPress={this.logout}>Logout</MenuItem>
                 </Menu>
                 <TouchableOpacity style={{ position: "absolute", alignSelf: 'flex-end', marginTop: 20, borderRadius: 50, padding: 10, width: 50, height: 50, backgroundColor: 'white', elevation: 3, right: 10 }}>
                     <Image source={require('../assets/image/headerRight.png')} style={{ width: 30, height: 30 }} />
@@ -110,7 +109,8 @@ export default class Home extends Component {
                     style={{
                         width: '100%',
                         height: '100%',
-                        zIndex: -1
+                        zIndex: -1,
+                        position: "absolute"
                     }}
                 >
                     <Marker
