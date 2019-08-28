@@ -55,12 +55,13 @@ class Register extends Component {
                 firebase.database().ref(`users/${value.user.uid}`).set({
                     username: this.state.username,
                     longitude: this.state.region.longitude,
-                    latitude: this.state.region.latitude
+                    latitude: this.state.region.latitude,
+                    uid:value.user.uid
                 }).then(() => {
                     AsyncStorage.setItem('uid', value.user.uid)
                     AsyncStorage.setItem('username', this.state.username)
-                    AsyncStorage.setItem('longitude',this.state.region.longitude)
-                    AsyncStorage.setItem('latitude',this.state.region.latitude)
+                    AsyncStorage.setItem('longitude', this.state.region.longitude)
+                    AsyncStorage.setItem('latitude', this.state.region.latitude)
                     this.props.navigation.navigate('Home')
                 }).catch((error) => {
                     console.warn('baru error', error);

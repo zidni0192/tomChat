@@ -22,7 +22,9 @@ export default class Home extends Component {
             latitude: 0,
             longitude: 0,
         },
-        uid:''
+        uid: '',
+        username:'',
+        users: []
     }
     _menu = null;
 
@@ -38,9 +40,6 @@ export default class Home extends Component {
         this._menu.show();
     };
     componentDidMount = async () => {
-        await AsyncStorage.getItem('uid', (error, result) => {
-            this.setState({ uid: result })
-        })        
         await GeoLocation.getCurrentPosition((position) => {
             let region = {
                 latitude: position.coords.latitude,
@@ -52,12 +51,9 @@ export default class Home extends Component {
                 region: { ...this.state.region, ...region }
             });
             console.warn(position);
-
         }, (err) => {
             console.warn(err);
         })
-    }
-    logout = async () => {
         if (!firebase.apps.length) {
             firebase.initializeApp({
                 apiKey: 'AIzaSyBeik8UWYHbu71aLy__L4j3Q1x7x0wGYCo',
@@ -69,20 +65,38 @@ export default class Home extends Component {
                 appId: '1:362309626919:android:89fe6e9c6f2268a7'
             })
         }
+        await AsyncStorage.getItem('uid', (error, result) => {
+            this.setState({ uid: result })
+        })
+        await AsyncStorage.getItem('username', (error, result) => {
+            this.setState({ username: result })
+        })
+
+        await firebase.database().ref('/users').on('value', (result) => {
+            let data = Object.values(result.val());
+            this.setState({ users: data })
+        })
+    }
+    logout = async () => {
         const uid = await AsyncStorage.getItem('uid')
-        console.warn(uid);
         await firebase.auth().signOut()
-        await firebase.database().ref('/user/' + uid).update({ status: 'offline' }).then(async() => {
+        await firebase.database().ref('/users/' + uid).update({ status: 'offline' }).then(async () => {
             await AsyncStorage.clear()
             this.hideMenu()
             this.props.navigation.push('Loading')
-        }).catch((error)=>{
+        }).catch((error) => {
             console.warn(error);
             this.hideMenu()
         })
     }
+    profile= async(data)=>{
+        console.warn('ini uid',data);
+        
+        this.hideMenu()
+        this.props.navigation.push('Profile',{data:data})
+    }
     render() {
-        console.warn(this.state.region);
+        console.warn('uid coy',this.state.uid);
         const userLocation = this.state.region && this.state.region
         return (
             <>
@@ -93,16 +107,16 @@ export default class Home extends Component {
                             <Image source={require('../assets/image/menu.png')} style={{ height: 20, width: 20, marginLeft: 5, marginTop: 5 }} />
                         </TouchableOpacity>}
                 >
-                    <MenuItem onPress={this.hideMenu}>Makan</MenuItem>
+                    <MenuItem onPress={()=>this.profile({uid:this.state.uid,username:this.state.username})}>Profile</MenuItem>
                     <MenuItem onPress={this.logout}>Logout</MenuItem>
                 </Menu>
-                <TouchableOpacity style={{ position: "absolute", alignSelf: 'flex-end', marginTop: 20, borderRadius: 50, padding: 10, width: 50, height: 50, backgroundColor: 'white', elevation: 3, right: 10 }}>
+                <TouchableOpacity style={{ position: "absolute", alignSelf: 'flex-end', marginTop: 20, borderRadius: 50, padding: 10, width: 50, height: 50, backgroundColor: 'white', elevation: 3, right: 10 }} onPress={() => this.props.navigation.push('ChatList')}>
                     <Image source={require('../assets/image/headerRight.png')} style={{ width: 30, height: 30 }} />
                 </TouchableOpacity>
                 <MapView
                     initialRegion={{
-                        latitude: userLocation.latitude,
-                        longitude: userLocation.longitude,
+                        latitude: this.state.region.latitude,
+                        longitude: this.state.region.longitude,
                         latitudeDelta: 0,
                         longitudeDelta: 0,
                     }}
@@ -112,16 +126,21 @@ export default class Home extends Component {
                         zIndex: -1,
                         position: "absolute"
                     }}
+                    showsCompass={false}
+                    showsUserLocation
                 >
-                    <Marker
-                        coordinate={{
-                            latitude: userLocation.latitude,
-                            longitude: userLocation.longitude
-                        }}>
-                        <View style={{ backgroundColor: 'blue', height: 50, width: 50, borderRadius: 50, alignItems: "center" }}>
-                            <Text style={{ marginTop: 10, color: 'white', fontWeight: "bold", fontSize: 10 }}>Ayaam</Text>
-                        </View>
-                    </Marker>
+                    {this.state.users.map((item) => {
+                        return <Marker
+                            onPress={() => this.profile({uid:item.uid,username:item.username})}
+                            coordinate={{
+                                latitude: item.latitude,
+                                longitude: item.longitude
+                            }}>
+                            <Image source={{ uri: 'http://pluspng.com/img-png/user-png-icon-male-user-icon-512.png' }}
+                                style={{ height: 50, width: 50, borderRadius:50 ,borderWidth:this.state.uid === item.uid?1:0,borderColor:'red' }}
+                            />
+                        </Marker>
+                    })}
                 </MapView>
             </>
         )

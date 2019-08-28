@@ -28,6 +28,8 @@ export default class chatRoom extends Component {
         )
     }
     render() {
+        console.warn();
+        
         return (
             <>
                 <View style={{ height: '90%' }}>

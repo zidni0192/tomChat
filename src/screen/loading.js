@@ -7,7 +7,7 @@ export default class loading extends Component {
     state={
         uid:''
     }
-    componentWillMount = async()=>{
+    componentDidMount = async()=>{
         await AsyncStorage.getItem('uid', (error, result) => {
             this.setState({ uid: result })
         })        

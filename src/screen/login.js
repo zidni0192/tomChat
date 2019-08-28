@@ -47,17 +47,20 @@ class Login extends Component {
                 appId: '1:362309626919:android:89fe6e9c6f2268a7'
             })
         }
-        console.warn(this.state);
+        console.warn('ini apaan',this.state);
         await firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
             .then(async (signin) => {
                 await firebase.database().ref('/users/' + signin.user.uid).update({ status: 'online',latitude:this.state.region.latitude,longitude:this.state.region.longitude })
-                await firebase.database().ref('/users/' + signin.user.uid).once('value').then((result) => {                    
+                await firebase.database().ref('/users/' + signin.user.uid).on('value',(result) => {                    
                     AsyncStorage.setItem('uid', signin.user.uid)
                     AsyncStorage.setItem('username', result.username)
                     AsyncStorage.setItem('longitude',result.longitude)
                     AsyncStorage.setItem('latitude',result.latitude)
-                    this.props.navigation.navigate('Home')
+                    this.props.navigation.push('Home')
                 })
+            })
+            .catch((err)=>{
+                Alert.alert('Error',err)
             })
     }
     render() {

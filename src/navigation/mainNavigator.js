@@ -11,8 +11,8 @@ import Login from '../screen/login'
 import Register from '../screen/register'
 import Loading from '../screen/loading'
 import ChatList from '../screen/chatList'
-import ChatRoom from '../screen/chatRoom'
-
+import ChatRoom from '../screen/chat'
+import Profile from '../screen/profile'
 const stackNavigator = createStackNavigator({
     Home: {
         screen: Home,
@@ -46,15 +46,18 @@ const stackNavigator = createStackNavigator({
     },
     ChatRoom: {
         screen: ChatRoom,
-        navigationOptions: ({ navigation }) => {
-            return {
-                headerTitle: 'wadoadoi',
-                headerLeft: <Text style={{ width: 40, height: 40, backgroundColor: '#ddd', borderRadius: 50, marginLeft:10 }}></Text>
-            }
+    },
+    Profile:{
+        screen:Profile,
+        navigationOptions:{
+            headerStyle:{
+                position:'absolute'
+            },
+            headerTransparent:true
         }
     }
 }, {
-        initialRouteName: 'ChatRoom'
+        initialRouteName: 'Loading'
     })
 
 export default createAppContainer(stackNavigator)
