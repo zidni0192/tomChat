@@ -1,6 +1,6 @@
-<h1 align="center">Simple Book Management</h1>
+<h1 align="center">Tom Chat app</h1>
 <p align="center">
-  <img width="150" src="https://diybookcovers.com/3Dmockups/assets/images/thumbs/groupF.png"/>
+  <img width="150" src="https://cdn4.vectorstock.com/i/1000x1000/68/53/empty-chat-bubbles-icon-sms-or-chatting-vector-12806853.jpg"/>
 </p>
 
 
@@ -13,9 +13,7 @@
 - [License](#license)
 
 ## Introduction
-Simple Book Management to make online book loan transactions based on app. There are several books with famous authors and can read a brief synopsis by looking at the details of the book
-
-The purpose of this application is for people to borrow books online and easily
+Tom chat is app for chatting and tracking friend
 
 ## Features
 * Login
