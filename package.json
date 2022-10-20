@@ -17,7 +17,7 @@
     "react-native-maps": "^0.25.0",
     "react-native-material-menu": "^0.6.6",
     "react-native-push-notification": "^3.1.9",
-    "react-native-reanimated": "^1.2.0",
+    "react-native-reanimated": "^2.10.0",
     "react-navigation": "^3.11.1"
   },
   "devDependencies": {
